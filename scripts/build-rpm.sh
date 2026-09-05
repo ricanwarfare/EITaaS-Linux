@@ -23,9 +23,23 @@ mkdir -p "$topdir/BUILD" "$topdir/BUILDROOT" "$topdir/RPMS" "$topdir/SOURCES" \
     "$topdir/SPECS" "$topdir/SRPMS" "$cache"
 if [ -n "$source_archive" ]; then
     cp "$source_archive" "$topdir/SOURCES/v$version.tar.gz"
-else
+elif [ -d "$project_root/.git" ] && command -v git >/dev/null 2>&1; then
     git -c safe.directory="$project_root" -C "$project_root" \
         archive --prefix="$source_name/" HEAD | gzip -n > "$topdir/SOURCES/v$version.tar.gz"
+else
+    python3 -c "
+import tarfile, sys
+from pathlib import Path
+root = Path(sys.argv[1]).resolve()
+dest = Path(sys.argv[2])
+ignored = {'.build', 'dist', '.git', '__pycache__', '.pytest_cache'}
+with tarfile.open(dest, 'w:gz') as tar:
+    for p in sorted(root.rglob('*')):
+        if any(part in ignored for part in p.parts):
+            continue
+        rel = p.relative_to(root)
+        tar.add(p, arcname=f'$source_name/{rel}', recursive=False)
+" "$project_root" "$topdir/SOURCES/v$version.tar.gz"
 fi
 
 # Both pinned upstream archives are verified against sources.json and land in

@@ -27,6 +27,36 @@ See `NOTICE` for the complete statement.
 > supported native Linux Windows App client. Confirm that your organization
 > permits this client before using it.
 
+## Quick Start
+
+### 1. Install (Ubuntu / Debian x86_64)
+
+Download the pre-built package from the [v1.0.0rc1 release](https://github.com/ricanwarfare/EITaaS-Linux/releases/tag/v1.0.0rc1) and install it:
+
+```bash
+wget https://github.com/ricanwarfare/EITaaS-Linux/releases/download/v1.0.0rc1/eitaas-linux_1.0.0~rc1_amd64.deb
+sudo apt install ./eitaas-linux_1.0.0~rc1_amd64.deb
+```
+
+*(Alternatively, to compile from source, see [Build the artifact yourself](#install).)*
+
+### 2. Check System Readiness
+
+Launch **EITaaS Connect** from your desktop applications menu or terminal:
+
+```bash
+eitaas-gui
+```
+
+The application opens on **Readiness** to verify that your smart-card service (`pcscd`), reader, and middleware (`opensc`) are active.
+
+### 3. Import Profile & Connect
+
+1. On the **Profile** page, click **Open web client** (or visit `https://rdweb.wvd.azure.us/arm/webclient`).
+2. Download your connection file (e.g. `Desktop.rdpw`).
+3. Return to Connect, press **I downloaded the RDP file** (Ctrl+O), and select it.
+4. Click **Connect** (Ctrl+Return) to launch your session!
+
 ## Why this exists
 
 The AVD web client works on Linux but does not redirect smart cards. Smart-card
