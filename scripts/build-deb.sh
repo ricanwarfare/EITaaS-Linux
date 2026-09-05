@@ -12,7 +12,11 @@ source_archive=${1:-}
 
 # debian/changelog is the single source of truth for the Debian version.
 # Debian file names carry no epoch, so drop one if the changelog gains it.
-version=$(dpkg-parsechangelog -l "$project_root/packaging/debian/changelog" -S Version)
+if command -v dpkg-parsechangelog >/dev/null 2>&1; then
+    version=$(dpkg-parsechangelog -l "$project_root/packaging/debian/changelog" -S Version)
+else
+    version=$(sed -n '1s/^[^(]*(\([^)]*\)).*/\1/p' "$project_root/packaging/debian/changelog")
+fi
 version=${version#*:}
 source_root="$build_root/eitaas-linux-$version"
 

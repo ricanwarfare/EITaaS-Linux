@@ -57,9 +57,23 @@ sudo apt install ./eitaas-linux_<version>_amd64.deb
 sudo pacman -U ./eitaas-linux-<version>-x86_64.pkg.tar.zst
 ```
 
-To build the artifact yourself, run the builder for your distribution —
-`scripts/build-rpm.sh`, `scripts/build-deb.sh`, or `scripts/build-arch.sh`.
-Each one verifies both pinned upstream archives against their SHA-256 digests,
+To build the artifact yourself, install the build dependencies and run the
+builder for your distribution — `scripts/build-rpm.sh`, `scripts/build-deb.sh`, or
+`scripts/build-arch.sh`.
+
+```bash
+# Ubuntu / Debian build dependencies
+sudo apt-get update && sudo apt-get install -y \
+  build-essential cmake debhelper desktop-file-utils devscripts \
+  dh-python dpkg-dev gettext git gnutls-bin libcurl4-openssl-dev \
+  libgtk-3-dev libicu-dev libjson-c-dev libjson-glib-dev libkrb5-dev \
+  libpcsclite-dev libsecret-1-dev libsodium-dev libsoup-3.0-dev \
+  libssh-dev libssl-dev libusb-1.0-0-dev libwebkit2gtk-4.1-dev \
+  ninja-build opensc patch pcscd pybuild-plugin-pyproject \
+  python3 python3-all python3-setuptools python3-wheel zlib1g-dev
+```
+
+Each builder verifies both pinned upstream archives against their SHA-256 digests,
 applies the same ordered patch series, and writes the binary package and its
 corresponding source to `dist/`.
 
@@ -96,6 +110,27 @@ your smart card (PIV) certificate and PIN — click the settings cog in the top
 right, choose "Download the rdp file", and click your desktop, which saves a
 file such as `Desktop.rdpw` to your Downloads folder. Come back, press **I
 downloaded the RDP file** (Ctrl+O), and pick it.
+
+The two public web-client endpoints and their identity authorities are:
+
+| Cloud Environment | Web Client URL | Identity Authority |
+| :--- | :--- | :--- |
+| **Azure US Government** (default) | `https://rdweb.wvd.azure.us/arm/webclient` | `login.microsoftonline.us` |
+| **Azure Commercial** | `https://client.wvd.microsoft.com/arm/webclient` | `login.microsoftonline.com` |
+
+> [!TIP]
+> **Browser Smart-Card (PIV) Detection**
+> If your browser does not detect your smart card or prompt for your certificate when visiting the web client:
+> - **Ubuntu Firefox (Snap)**: Ubuntu packages Firefox as a sandboxed Snap that blocks the smart-card daemon by default. Allow access by running:
+>   ```bash
+>   sudo snap connect firefox:pcscd
+>   ```
+> - **Google Chrome / Chromium**: Chrome checks the NSS database under `~/.pki/nssdb`. Register the OpenSC PKCS #11 module by running:
+>   ```bash
+>   mkdir -p -m 700 ~/.pki/nssdb
+>   certutil -d sql:$HOME/.pki/nssdb -N --empty-password
+>   modutil -dbdir sql:$HOME/.pki/nssdb -add "OpenSC PKCS#11" -libfile /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so -force
+>   ```
 
 Importing *moves* the file out of Downloads into
 `$XDG_DATA_HOME/eitaas-remmina/profiles/` (directory mode 0700, file mode

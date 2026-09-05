@@ -98,17 +98,31 @@ def command_fetch(args: argparse.Namespace) -> int:
 def repository_sources(project_root: Path, output: Path, source_archive: Path | None) -> None:
     """Populate ``output`` with the repository tree, tarball or Git working copy."""
     if source_archive is None:
-        subprocess.run(
-            [
-                "git", "-c", f"safe.directory={project_root}",
-                "-C", str(project_root), "archive", "--format=tar", "HEAD",
-            ],
-            check=True,
-            stdout=(output / ".repository.tar").open("wb"),
-        )
-        with tarfile.open(output / ".repository.tar") as source:
+        if (project_root / ".git").exists() and shutil.which("git"):
+            subprocess.run(
+                [
+                    "git", "-c", f"safe.directory={project_root}",
+                    "-C", str(project_root), "archive", "--format=tar", "HEAD",
+                ],
+                check=True,
+                stdout=(output / ".repository.tar").open("wb"),
+            )
+            with tarfile.open(output / ".repository.tar") as source:
+                source.extractall(output, filter="data")
+            (output / ".repository.tar").unlink()
+            return
+
+        ignored = {".build", "dist", ".git", "__pycache__", ".pytest_cache"}
+        tar_path = output / ".repository.tar"
+        with tarfile.open(tar_path, "w") as tar:
+            for path in sorted(project_root.rglob("*")):
+                if any(part in ignored for part in path.parts):
+                    continue
+                rel = path.relative_to(project_root)
+                tar.add(path, arcname=str(rel), recursive=False)
+        with tarfile.open(tar_path) as source:
             source.extractall(output, filter="data")
-        (output / ".repository.tar").unlink()
+        tar_path.unlink()
         return
 
     staging = output / ".repository"
