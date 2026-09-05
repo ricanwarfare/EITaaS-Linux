@@ -131,6 +131,7 @@ The two public web-client endpoints and their identity authorities are:
 >   certutil -d sql:$HOME/.pki/nssdb -N --empty-password
 >   modutil -dbdir sql:$HOME/.pki/nssdb -add "OpenSC PKCS#11" -libfile /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so -force
 >   ```
+> - **Automated Setup**: For an automated setup script that configures browser NSS databases, smart-card services, and certificates, see [linux_cac](https://github.com/ricanwarfare/linux_cac).
 
 Importing *moves* the file out of Downloads into
 `$XDG_DATA_HOME/eitaas-remmina/profiles/` (directory mode 0700, file mode
