@@ -19,6 +19,12 @@ oauth-callback*
 *.p7b
 *.p7c
 
+# Secrets, environment, and credentials
+.env
+.env.*
+*.env
+.secrets*
+
 # Agent and local automation state
 .agents/
 .agent/
@@ -27,6 +33,8 @@ oauth-callback*
 .cursor/
 .windsurf/
 .aider*
+.gemini/
+scratch/
 AGENTS.local.md
 CLAUDE.local.md
 
@@ -45,9 +53,29 @@ build/
 dist/
 *.egg-info/
 *.deb
+*.ddeb
+*.dsc
+*.tar.xz
+*.buildinfo
+*.changes
+*.upload
 *.rpm
+*.srpm
+*.pkg.tar.zst
 *.log
 *.tmp
+.cache/
+
+# Compiled objects and libraries
+*.o
+*.so
+*.dylib
+*.a
+
+# Patch rejects and backups
+*.orig
+*.rej
+*.bak
 
 # Editors and operating systems
 .idea/
@@ -55,3 +83,7 @@ dist/
 *.swp
 *~
 .DS_Store
+Thumbs.db
+core
+core.*
+vgcore.*
